@@ -1,0 +1,145 @@
+Docker
+
+docker ps -a = lista os containers "pausados"
+
+Container vs VM
+    A VM vai utilizar todo o hardware para o processamento para sistemas diferentes, seria necessário uma VM para cada OS.
+    Já com o Docker apenas um sistema é utilizado, onde são criados os containers, cada um com o seu OS. Esses containers rodam de forma isolada.
+    Com containers a inicialização da aplicação é muito mais rápida do que em VMs.
+
+systemctl --user start docker-desktop (comando para iniciar o docker desktop)
+systemctl --user stop docker-desktop (comando para encerrar)
+      SOLUÇÃO PARA BURLAR QUANDO DESKTOP NÃO INICIAR
+           $ sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+           $ systemctl --user restart docker-desktop
+
+
+
+docker file - É o responsável por transformar a aplicação em uma imagem docker
+    Imagem:
+        Pedaço do OS
+        Ambiente (node por exemplo)
+        Arquivos
+        Bibliotecas
+        Variaveis
+
+    Container:
+        É um processo. Armazena a imagem.
+        (É o container que é "enviado" para o servidor - Transferencia de ambiente de desenvolvimento para ambiente de teste/produção)
+
+Docker Hub (registry):
+    Como GitHub, só que para docker, é um repositório de containers
+
+Dockerfile:
+    O arquivo deve ser criado com D maiúsculo e o restante minúsculo, não possuí extensão
+    A primeira linha deve conter o OS que será utilizado
+
+Comandos:
+    docker build -t welcome-to-docker .
+    Constroi a imagem e -t atribui um nome a imagem (nesse caso o nome é welcome-to-docker)
+
+
+###########Linux
+
+it - sistema interativo
+é possível rodar uma imagem sem precisar baixa-la usando o -it
+
+  docker run -it ubuntu
+
+whoami
+ls -1 = lista os diretórios um embaixo do outro
+ls -l = lista privilégio, o usuário que criou e o diretório
+cd ~ = acessa home do root
+cat = visualizar conteúdo de um arquivo sem abri-lo (mostra todo o conteúdo de uma só vez)
+more = mostra o conteúdo em partes
+cat file.txt > copy.txt = copia o conteúdo de um arquivo para outro
+cat file1.txt file2.txt > file3.txt = concatena o conteúdo do file1 e 2 no file3
+grep (global regular expression print)
+    grep palavra_procurada arquivo1.txt arquivo2.txt
+    grep -i -r hello . = -i ignora upper/lower case - -r procura dentro de subdiretório - . para procurar em todos os arquivos
+find = lista tudo dentro do diretório
+    find /etc/ = lista tudo dentro de etc
+    find -type f = lista apenas arquivos
+    find -type d = lista todos os diretórios
+    find -type f -name "nome_arquivo.txt"
+    find -type f -name "inicio*" = todos os arquivos que começar com "inicio"
+
+** Com touch é possível criar mais de um arquivo de uma só vez = touch file1.txt file2.txt
+
+echo = print
+echo $0 = mostra a pasta que estou
+history = enumera e mostra os comandos utilizados recentemente
+apt = advanced package tool
+      apt list = lista todos os pacotes instalados
+      apt update
+      apt install
+      apt remove nome_do_pacote
+
+    Gerenciando Processos:
+
+        Chaining / Combine - Sequência de comandos:
+                mkdir teste; cd teste; echo ok
+                    - Nesse caso, se algum comando não puder ser executado (ex o mkdir teste por já existir um diretório como mesmo nome)
+                    o comando continuara, acessando o diretório teste e printando o ok.
+                    Caso seja necessário que todos os comandos sejam executados corretamente, basta altera o ; por o operador lógico and: &&
+                        mkdir teste && cd teste && echo ok
+
+        ps - lista processos no linux
+        bash - born again shell
+        sleep 5 & = o & faz com que o processo rode em background e libera o terminal para novos comandos
+        kill process_id = mata o processo (process_id pega através do comando ps)
+
+    
+    Gerenciando Usuários:
+    
+        cat /etc/shadow/ (diretório com senhas encriptadas)
+
+        useradd -m nome_usuário - Cria usuário (-m = com diretório home)
+            Logar com usuário:
+                abrir nova abada do terminal
+                    docker exec -it -u felipe docker_id bash (-u user)
+        usermod
+        userdel
+
+    Gerenciando Grupos:
+
+        cat /etc/group
+        (Sempre que um usário é criado, ele é adicionado a um grupo primário, podendo ser adicionado em grupos secundários. O grupo primário é sempre o próprio usuário)
+        groups nome_usuario = Lista os grupos os quais o usuário pertence
+
+        groupadd nome_grupo = cria um novo grupo
+        groupmod
+        groupdelete
+
+        usermod -G docker felipe = adiciona o usuário felipe ao grupo secundário(-G) docker
+
+    Permissões de Arquivos:
+        r: read
+        w: write
+        x: execute
+
+        Sessões: - --- --- ---
+                - diz se é um diretório ou um arquivo (d = diretório, - = arquivo);
+                1º Sessão: Permissões do usuário (o que o usuário pode fazer nesse arquivo);
+                2º Sessão: Grupo de usuários;
+                3º Sessão: Todos os outros (acesso sem login).
+        
+        Adicionando permissão:
+            chmod = change mod
+            u+ = adicionar
+
+            chmod u+x docker.txt
+
+
+
+
+
+
+  Sistema de arquivos Linux
+      Root = /
+         dir = bin, dev, etc
+
+bin(binários), dev(arquivos device), etc(extended tool text configuration - arquivos config de host)
+Google = Linux Directory Structure
+
+        Redirecionamento no Linux
